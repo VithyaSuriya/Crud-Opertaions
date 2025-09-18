@@ -2,76 +2,116 @@ const userService = require("../services/userService");
 
 class UserController {
   async create(req, res) {
-    try {
-      const user = await userService.createUser(req.body);
-      res.status(201).json({
-        message: "User Created",
-        data: user,
-      });
-    } catch (err) {
-      res.status(400).json({
-        message: "Bad request",
-        error: err.message,
+    const result = await userService.createUser(req.body);
+
+    if (!result.success) {
+      return res.status(400).json({
+        statusCode:400,
+        success: false,
+        message: result.message,
       });
     }
+
+    return res.status(201).json({
+      statusCode:201,
+      success: true,
+      message: "User created",
+      data: result.data,
+    });
+  }
+
+  async login(req, res) {
+    const { email, password } = req.body;
+    const result = await userService.loginUser(email, password);
+
+    if (!result.success) {
+      return res.status(401).json({
+        statusCode:401,
+        success: false,
+        message: result.message,
+      });
+    }
+
+    return res.json({
+      statusCode:200,
+      success: true,
+      message: "Login successful",
+      token: result.data.token,
+    });
   }
 
   async findAll(req, res) {
-    const users = await userService.getAllUsers();
-    res.json(users);
+    const result = await userService.getAllUsers();
+
+    if (!result.success) {
+      return res.status(500).json({
+        statusCode:500,
+        success: false,
+        message: result.message,
+      });
+    }
+
+    return res.json({
+      statusCode:200,
+      success: true,
+      message:"User fetched successfully",
+      data: result.data,
+    });
   }
 
   async findOne(req, res) {
-    try {
-      const user = await userService.getUserById(req.params.id);
-      if (!user)
-        return res.status(404).json({
-          message: "User not found",
-        });
+    const result = await userService.getUserById(req.params.id);
 
-      res.json(user);
-    } catch (err) {
-      res.status(400).json({
-        message: "Bad request",
-        error: err.message,
+    if (!result.success) {
+      return res.status(404).json({
+        statusCode:404,
+        success: false,
+        message: result.message,
       });
     }
+
+    return res.json({
+      statusCode:200,
+      success: true,
+      message:"User fetched successfully",
+      data: result.data,
+    });
   }
 
   async update(req, res) {
-    try {
-      const user = await userService.updateById(req.params.id,req.body);
-      if (!user)
-        return res.status(404).json({
-          message: "User not found",
-          error: err.message,
-        });
+    const result = await userService.updateById(req.params.id, req.body);
 
-      res.json({
-        message: "User updated",
-        data: user,
-      });
-    } catch (err) {
-      res.status(400).json({
-        message: "Bad request",
+    if (!result.success) {
+      return res.status(404).json({
+        statusCode:404,
+        success: false,
+        message: result.message,
       });
     }
+
+    return res.json({
+      statusCode:200,
+      success: true,
+      message: "User updated",
+      data: result.data,
+    });
   }
+
   async delete(req, res) {
-    try {
-      const user = await userService.deleteById(req.params.id);
-      if (!user)
-        return res.status(404).json({
-          message: "User not found",
-          error: err.message,
-        });
-      res.json({ message: "User deleted" });
-    } catch (err) {
-      res.status(400).json({
-        message: "Bad request",
-        error: err.message,
+    const result = await userService.deleteById(req.params.id);
+
+    if (!result.success) {
+      return res.status(404).json({
+        statusCode:404,
+        success: false,
+        message: result.message,
       });
     }
+
+    return res.json({
+      success: true,
+      message: "User deleted",
+    });
   }
 }
 
