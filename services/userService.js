@@ -1,7 +1,7 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
+const config = require("../config/env");
 class UserService {
   async createUser(data) {
     try {
@@ -46,7 +46,7 @@ class UserService {
         };
       }
 
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      const token = jwt.sign({ id: user._id }, config.jwtSecret, {
         expiresIn: "1d",
       });
 
@@ -138,6 +138,23 @@ class UserService {
         success: false,
         message: err.message,
       };
+    }
+  }
+  async uploadUserImage(userId, filename) {
+    try {
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { image: filename },
+        { new: true }
+      );
+
+      if (!user) {
+        return { success: false, message: "User not found" };
+      }
+
+      return { success: true, data: user };
+    } catch (err) {
+      return { success: false, message: err.message };
     }
   }
 }

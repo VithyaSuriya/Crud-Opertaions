@@ -6,14 +6,14 @@ class UserController {
 
     if (!result.success) {
       return res.status(400).json({
-        statusCode:400,
+        statusCode: 400,
         success: false,
         message: result.message,
       });
     }
 
     return res.status(201).json({
-      statusCode:201,
+      statusCode: 201,
       success: true,
       message: "User created",
       data: result.data,
@@ -26,14 +26,14 @@ class UserController {
 
     if (!result.success) {
       return res.status(401).json({
-        statusCode:401,
+        statusCode: 401,
         success: false,
         message: result.message,
       });
     }
 
     return res.json({
-      statusCode:200,
+      statusCode: 200,
       success: true,
       message: "Login successful",
       token: result.data.token,
@@ -45,16 +45,16 @@ class UserController {
 
     if (!result.success) {
       return res.status(500).json({
-        statusCode:500,
+        statusCode: 500,
         success: false,
         message: result.message,
       });
     }
 
     return res.json({
-      statusCode:200,
+      statusCode: 200,
       success: true,
-      message:"User fetched successfully",
+      message: "User fetched successfully",
       data: result.data,
     });
   }
@@ -64,16 +64,16 @@ class UserController {
 
     if (!result.success) {
       return res.status(404).json({
-        statusCode:404,
+        statusCode: 404,
         success: false,
         message: result.message,
       });
     }
 
     return res.json({
-      statusCode:200,
+      statusCode: 200,
       success: true,
-      message:"User fetched successfully",
+      message: "User fetched successfully",
       data: result.data,
     });
   }
@@ -83,14 +83,14 @@ class UserController {
 
     if (!result.success) {
       return res.status(404).json({
-        statusCode:404,
+        statusCode: 404,
         success: false,
         message: result.message,
       });
     }
 
     return res.json({
-      statusCode:200,
+      statusCode: 200,
       success: true,
       message: "User updated",
       data: result.data,
@@ -102,7 +102,7 @@ class UserController {
 
     if (!result.success) {
       return res.status(404).json({
-        statusCode:404,
+        statusCode: 404,
         success: false,
         message: result.message,
       });
@@ -111,6 +111,25 @@ class UserController {
     return res.json({
       success: true,
       message: "User deleted",
+    });
+  }
+  async uploadImage(req, res) {
+    if (!req.file)
+      return res
+        .status(400)
+        .json({ success: false, message: "No file uploaded" });
+
+    const result = await userService.uploadUserImage(
+      req.params.id,
+      req.file.filename
+    );
+    if (!result.success)
+      return res.status(404).json({ success: false, message: result.message });
+
+    return res.json({
+      success: true,
+      message: "Image uploaded successfully",
+      data: result.data,
     });
   }
 }
